@@ -6,7 +6,7 @@ var path = require('path');
 var cont
 
 //Require all the controllers
-var homeController      = require('./resources/home');
+var home     = require('./resources/home');
 
 // Create our Express application
 var app = express();
@@ -22,26 +22,44 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(function(req, res, next) {
- 	res.header("Access-Control-Allow-Origin", "http://192.168.1.103:3000");
-  	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  	res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+ 	  res.header("Access-Control-Allow-Origin",    "http://localhost:8080");
+  	res.header("Access-Control-Allow-Headers",   "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods",   "GET,PUT,POST,DELETE");
   
   	next();
 });
 
 app.use(bodyParser.json());
 
+
+// SOCKET //
+
+var io = require('socket.io')();
+
+io.on('connect', function (socket) {
+    console.log("Connected!");
+});
+
+// SOCKET //
+
+function link(route, controller)
+{
+	router.route(route)
+	   .get(controller.GET)
+	   .post(controller.POST)
+	   .put(controller.PUT)
+	   .delete(controller.DELETE);
+}
+
 // Create our Express router
 var router = express.Router();
 
-// Create endpoint handlers for /users
-router.route('/')
-  .get(homeController.GET);
+link('/', home);
 
 app.use('/', router);
 
-// Start the server
-app.listen(process.env.PORT || 8000);
+// Start the server and connect the socket to the server
+var server = app.listen(process.env.PORT || 8000);
+io.attach(server);
 
 module.exports = router;
