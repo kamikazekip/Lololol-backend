@@ -1,5 +1,6 @@
 // Load required packages
 var express = require('express');
+var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 
 var path = require('path');
@@ -7,6 +8,9 @@ var cont
 
 //Require all the controllers
 var home     = require('./resources/home');
+
+// Connect to the MongoDB
+mongoose.connect('mongodb://admin:admin@ds023468.mlab.com:23468/lololol-database');
 
 // Create our Express application
 var app = express();
